@@ -62,8 +62,19 @@ class _MapPageState extends State<MapPage> {
               child: Text("Loading..."),
             )
           : GoogleMap(
-              onMapCreated: ((GoogleMapController controller) =>
-                  _mapController.complete(controller)),
+              onMapCreated: ((GoogleMapController controller) {
+                _mapController.complete(controller);
+                const Duration interval = Duration(seconds: 10);
+                Timer.periodic(interval, (timer) async {
+                  getLocationUpdatesLocation().then(
+                    (_) => {
+                      getPolylinePoints().then((coordinates) => {
+                            generatePolyLineFromPoints(coordinates),
+                          }),
+                    },
+                  );
+                });
+              }),
               initialCameraPosition: const CameraPosition(
                 target: _pGooglePlex,
                 zoom: 13,
